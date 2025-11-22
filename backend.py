@@ -10,12 +10,14 @@ def read_price_24_from_github_raw():
     Auto-fetch hourly prices from GitHub RAW URL.
     Update this URL to match your repo and file path.
     """
-    raw_url = "https://raw.githubusercontent.com/BhadresK/Trailer-smart-charging/main/data/hourly_prices.csv"
+    raw_url = "https://github.com/BhadresK/Trailer-smart-charging/blob/main/data/hourly_prices.csv?raw=true"
     try:
         df = pd.read_csv(raw_url)
         return _normalize_price_df(df)
-    except Exception as e:
-        raise RuntimeError(f"Failed to fetch prices from GitHub: {e}")
+    except:
+        # Fallback to local file
+        df = pd.read_csv("data/hourly_prices.csv")
+        return _normalize_price_df(df)
 
 def _normalize_price_df(df: pd.DataFrame):
     if "price" not in df.columns:
