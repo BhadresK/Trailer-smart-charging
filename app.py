@@ -81,9 +81,9 @@ def render_input_panel():
                 "Charging Unit Max Power (kW)", value=float(p["MaxChargingPower_kW"]), step=0.1
             )
 
-            st.subheader("Season Split")
             p["WinterMonths"] = st.slider("Winter months", 0, 12, int(p["WinterMonths"]))
-            st.caption(f"Summer months auto-set to **{12 - int(p['WinterMonths'])}**.")
+            p["SummerMonths"] = 12 - p["WinterMonths"]  # <-- Add this line
+            st.caption(f"Summer months auto-set to **{p['SummerMonths']}**.")
 
         # --- Column 3: Seasonal SoC + Reefer cycle ---
         with c3:
