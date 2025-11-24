@@ -8,19 +8,6 @@ import streamlit as st
 import backend as be
 
 
-st.markdown("""
-    <style>
-    .block-container {
-        padding-top: 0rem;
-        padding-bottom: 0rem;
-        padding-left: 1rem;
-        padding-right: 1rem;
-    }
-    </style>
-""", unsafe_allow_html=True)
-
-
-
 st.set_page_config(page_title="EV Charging Cost — Interactive", layout="centered")
 
 # -------------------- MATLAB-aligned defaults --------------------
