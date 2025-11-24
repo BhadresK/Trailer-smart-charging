@@ -82,14 +82,26 @@ def render_input_panel():
             p["OBC_UsableCapacity_kW"] = st.number_input("OBC Usable Capacity (kW)", value=float(p["OBC_UsableCapacity_kW"]), step=0.1)
             p["OBCEfficiency_pc"] = st.number_input("OBC Efficiency (%)", value=float(p["OBCEfficiency_pc"]), step=0.1, min_value=0.0, max_value=100.0)
 
-        # Column 2: Arrival & Departure + Charging Unit
+        # --- Column 2: Arrival & Departure + Charging unit + Season split ---
         with c2:
             st.subheader("Arrival & Departure")
             p["Arrival_HHMM"] = st.text_input("Arrival Time (HH:MM)", value=p["Arrival_HHMM"])
             p["Departure_HHMM"] = st.text_input("Departure Time (HH:MM)", value=p["Departure_HHMM"])
-
+        
             st.subheader("Charging Unit")
-            p["MaxChargingPower_kW"] = st.number_input("Charging Unit Max Power (kW)", value=float(p["MaxChargingPower_kW"]), step=0.1)
+            p["MaxChargingPower_kW"] = st.number_input(
+                "Charging Unit Max Power (kW)", value=float(p["MaxChargingPower_kW"]), step=0.1
+            )
+        
+            # --- Season Split inside Column 2 ---
+            st.subheader("Season Split")
+            winter = st.slider("Winter months", 0, 12, int(p["WinterMonths"]))
+            summer = 12 - winter
+            st.slider("Summer months", 0, 12, summer, disabled=True)
+        
+            # Update params
+            p["WinterMonths"] = winter
+            p["SummerMonths"] = summer
 
         # Column 3: Seasonal SoC + Reefer Cycle
         with c3:
