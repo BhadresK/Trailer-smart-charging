@@ -92,7 +92,7 @@ def render_input_panel():
                 return
             st.session_state.params = p
             st.session_state.show_output = True
-            st.experimental_rerun()
+            st.rerun()
 
 # -------------------- ROUTING: input first, then output --------------------
 if not st.session_state.show_output:
