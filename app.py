@@ -94,12 +94,14 @@ def render_input_panel():
             def update_summer():
                 st.session_state.WinterMonths = 12 - st.session_state.SummerMonths
             
-            # Two sliders with callbacks
+            # Two sliders with keys and callbacks
             p["WinterMonths"] = st.slider(
-                "Winter months", 0, 12, st.session_state.WinterMonths, on_change=update_winter
+                "Winter months", 0, 12, st.session_state.WinterMonths,
+                key="WinterMonths", on_change=update_winter
             )
             p["SummerMonths"] = st.slider(
-                "Summer months", 0, 12, st.session_state.SummerMonths, on_change=update_summer
+                "Summer months", 0, 12, st.session_state.SummerMonths,
+                key="SummerMonths", on_change=update_summer
             )
 
         # --- Column 3: Seasonal SoC + Reefer cycle ---
