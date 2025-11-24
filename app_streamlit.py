@@ -283,7 +283,7 @@ figLegend.legend(
 # Trim extra margins
 figLegend.tight_layout(pad=0.1)
 
-# st.pyplot(figLegend, use_container_width=True)
+st.pyplot(figLegend, use_container_width=False)
 
 
 
