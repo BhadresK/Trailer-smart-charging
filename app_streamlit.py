@@ -7,7 +7,21 @@ import matplotlib.pyplot as plt
 import streamlit as st
 import backend as be
 
-st.set_page_config(page_title="EV Charging Cost — Interactive", layout="wide")
+
+st.markdown("""
+    <style>
+    .block-container {
+        padding-top: 0rem;
+        padding-bottom: 0rem;
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+    </style>
+""", unsafe_allow_html=True)
+
+
+
+st.set_page_config(page_title="EV Charging Cost — Interactive", layout="centered")
 
 # -------------------- MATLAB-aligned defaults --------------------
 DEFAULTS = {
@@ -104,6 +118,20 @@ def render_input_panel():
 if not st.session_state.show_output:
     render_input_panel()
     st.stop()  # do not run the output logic below until user clicks Calculate
+
+
+# ---------------------------------------------------------------------------
+
+plt.rcParams.update({
+    'font.size': 8,          # smaller text everywhere
+    'axes.labelsize': 8,
+    'axes.titlesize': 9,
+    'xtick.labelsize': 7,
+    'ytick.labelsize': 7,
+    'legend.fontsize': 8
+})
+
+# ---------------------------------------------------------------------------
 
 p = st.session_state.params
 
@@ -266,18 +294,18 @@ legend_items = [
 ]
 
 # Smaller figure height and tighter legend spacing
-figLegend = plt.figure(figsize=(4, 0.2))  # width, height (inches)
+figLegend = plt.figure(figsize=(6, 0.3))  # width, height (inches)
 figLegend.legend(
     handles=legend_items,
     loc='upper center',
     ncol=3,
     frameon=False,
     prop={'size': 7},        # smaller font
-    handlelength=1.0,        # shorter line samples
-    handletextpad=0.6,       # less gap between line and text
+    handlelength=0.8,        # shorter line samples
+    handletextpad=0.4,       # less gap between line and text
     borderpad=0.2,           # tighter box padding
-    labelspacing=0.4,        # less vertical spacing
-    columnspacing=0.8        # tighter gap between columns
+    labelspacing=0.3,        # less vertical spacing
+    columnspacing=0.6        # tighter gap between columns
 )
 
 # Trim extra margins
@@ -288,7 +316,7 @@ st.pyplot(figLegend, use_container_width=False)
 
 
 # ---- Winter (full-width)
-figW, axW = plt.subplots(figsize=(12, 4))
+figW, axW = plt.subplots(figsize=(8, 3))
 axW.fill_between(h24, P_norm_W, step='pre', color=colW_dumb, alpha=0.30, label='Dumb Power')
 axW.fill_between(h24, P_smart_W, step='pre', color=colW_smart, alpha=0.35, label='Winter Smart Power')
 axW.set_ylabel('Power (kW)')
@@ -326,7 +354,7 @@ for h in range(24):
 st.pyplot(figW, use_container_width=True)
 
 # ---- Summer (full-width)
-figS, axS = plt.subplots(figsize=(12, 4))
+figS, axS = plt.subplots(figsize=(8, 3))
 
 # Ensure left axis draws above the twin axis
 axS.set_zorder(2)
