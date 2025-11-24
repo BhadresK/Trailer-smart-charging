@@ -303,7 +303,7 @@ st.pyplot(figLegend, use_container_width=False)
 
 
 # ---- Winter (full-width)
-figW, axW = plt.subplots(figsize=(8, 3))
+figW, axW = plt.subplots(figsize=(12, 3))
 axW.fill_between(h24, P_norm_W, step='pre', color=colW_dumb, alpha=0.30, label='Dumb Power')
 axW.fill_between(h24, P_smart_W, step='pre', color=colW_smart, alpha=0.35, label='Winter Smart Power')
 axW.set_ylabel('Power (kW)')
@@ -341,7 +341,7 @@ for h in range(24):
 st.pyplot(figW, use_container_width=True)
 
 # ---- Summer (full-width)
-figS, axS = plt.subplots(figsize=(8, 3))
+figS, axS = plt.subplots(figsize=(12, 3))
 
 # Ensure left axis draws above the twin axis
 axS.set_zorder(2)
