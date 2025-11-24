@@ -81,9 +81,26 @@ def render_input_panel():
                 "Charging Unit Max Power (kW)", value=float(p["MaxChargingPower_kW"]), step=0.1
             )
 
-            p["WinterMonths"] = st.slider("Winter months", 0, 12, int(p["WinterMonths"]))
-            p["SummerMonths"] = 12 - p["WinterMonths"]  # <-- Add this line
-            st.caption(f"Summer months auto-set to **{p['SummerMonths']}**.")
+            # Initialize both if not present
+            if "WinterMonths" not in st.session_state:
+                st.session_state.WinterMonths = p["WinterMonths"]
+            if "SummerMonths" not in st.session_state:
+                st.session_state.SummerMonths = 12 - p["WinterMonths"]
+            
+            # Callback functions to keep total = 12
+            def update_winter():
+                st.session_state.SummerMonths = 12 - st.session_state.WinterMonths
+            
+            def update_summer():
+                st.session_state.WinterMonths = 12 - st.session_state.SummerMonths
+            
+            # Two sliders with callbacks
+            p["WinterMonths"] = st.slider(
+                "Winter months", 0, 12, st.session_state.WinterMonths, on_change=update_winter
+            )
+            p["SummerMonths"] = st.slider(
+                "Summer months", 0, 12, st.session_state.SummerMonths, on_change=update_summer
+            )
 
         # --- Column 3: Seasonal SoC + Reefer cycle ---
         with c3:
