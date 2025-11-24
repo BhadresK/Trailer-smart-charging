@@ -72,9 +72,9 @@ def render_input_panel():
             summer = 12 - winter
             st.slider("Summer months", 0, 12, summer, disabled=True)
         
-            # Update params
-            p["WinterMonths"] = winter
-            p["SummerMonths"] = summer
+        # Update params
+        p["WinterMonths"] = winter
+        p["SummerMonths"] = summer
 
         # Column 3: Seasonal SoC + Reefer Cycle
         with c3:
