@@ -272,18 +272,18 @@ figLegend.legend(
     loc='upper center',
     ncol=3,
     frameon=False,
-    prop={'size': 4},        # smaller font
+    prop={'size': 7},        # smaller font
     handlelength=1.0,        # shorter line samples
-    handletextpad=0.3,       # less gap between line and text
+    handletextpad=0.6,       # less gap between line and text
     borderpad=0.2,           # tighter box padding
-    labelspacing=0.2,        # less vertical spacing
-    columnspacing=0.4        # tighter gap between columns
+    labelspacing=0.4,        # less vertical spacing
+    columnspacing=0.8        # tighter gap between columns
 )
 
 # Trim extra margins
 figLegend.tight_layout(pad=0.1)
 
-st.pyplot(figLegend, use_container_width=True)
+# st.pyplot(figLegend, use_container_width=True)
 
 
 
