@@ -81,12 +81,9 @@ def render_input_panel():
                 "Charging Unit Max Power (kW)", value=float(p["MaxChargingPower_kW"]), step=0.1
             )
 
-            with st.form(key="input_form", clear_on_submit=False):
-                p["WinterMonths"] = st.slider("Winter months", 0, 12, int(p["WinterMonths"]))
-                submitted = st.form_submit_button("Calculate")
-            
-        # Show dynamic caption outside the form
-        st.caption(f"Summer months auto-set to **{12 - int(p['WinterMonths'])}**.")
+            p["WinterMonths"] = st.slider("Winter months", 0, 12, int(p["WinterMonths"]))
+            p["SummerMonths"] = 12 - p["WinterMonths"]  # <-- Add this line
+            st.caption(f"Summer months auto-set to **{p['SummerMonths']}**.")
 
         # --- Column 3: Seasonal SoC + Reefer cycle ---
         with c3:
