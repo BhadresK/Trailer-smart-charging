@@ -33,55 +33,86 @@ if "show_output" not in st.session_state:
     st.session_state.show_output = False
 
 
-# -------------------- INPUT PANEL (define BEFORE use) --------------------
+# ---------------------- INPUT PANEL (define BEFORE use) ----------------------
 def render_input_panel():
     st.title("Reefer — Input Parameters")
-    st.caption("Adjust, then click **Calculate** to open the Output GUI.")
 
     p = st.session_state.params  # shorthand
 
+    # Use a single form so the Calculate button submits all controls
     with st.form(key="input_form", clear_on_submit=False):
-        c1, c2 = st.columns(2)
+        # 3 compact columns + a narrow right-side column for the Calculate button
+        c1, c2, c3, cBtn = st.columns([1, 1, 1, 0.35])
 
-        # Left column
+        # --- Column 1: Battery details + OBC details ---
         with c1:
             st.subheader("Battery Details")
-            p["BatteryCapacity_kWh"] = st.number_input("Battery Capacity (kWh)", value=float(p["BatteryCapacity_kWh"]), step=0.1)
-            p["UsableBatteryCap_kWh"] = st.number_input("Usable Battery Capacity (kWh)", value=float(p["UsableBatteryCap_kWh"]), step=0.1)
-            p["BatteryChargingEffi_pc"] = st.number_input("Battery Charging Efficiency (%)", value=float(p["BatteryChargingEffi_pc"]), step=0.1, min_value=0.0, max_value=100.0)
+            p["BatteryCapacity_kWh"] = st.number_input(
+                "Battery Capacity (kWh)", value=float(p["BatteryCapacity_kWh"]), step=0.1
+            )
+            p["UsableBatteryCap_kWh"] = st.number_input(
+                "Usable Battery Capacity (kWh)", value=float(p["UsableBatteryCap_kWh"]), step=0.1
+            )
+            p["BatteryChargingEffi_pc"] = st.number_input(
+                "Battery Charging Efficiency (%)",
+                value=float(p["BatteryChargingEffi_pc"]), step=0.1, min_value=0.0, max_value=100.0
+            )
 
+            st.subheader("OBC Details")
+            p["OBC_Capacity_kW"] = st.number_input(
+                "OBC Capacity (kW)", value=float(p["OBC_Capacity_kW"]), step=0.1
+            )
+            p["OBC_UsableCapacity_kW"] = st.number_input(
+                "OBC Usable Capacity (kW)", value=float(p["OBC_UsableCapacity_kW"]), step=0.1
+            )
+            p["OBCEfficiency_pc"] = st.number_input(
+                "OBC Efficiency (%)",
+                value=float(p["OBCEfficiency_pc"]), step=0.1, min_value=0.0, max_value=100.0
+            )
+
+        # --- Column 2: Arrival & Departure + Charging unit + Season split ---
+        with c2:
             st.subheader("Arrival & Departure")
             p["Arrival_HHMM"] = st.text_input("Arrival Time (HH:MM)", value=p["Arrival_HHMM"])
             p["Departure_HHMM"] = st.text_input("Departure Time (HH:MM)", value=p["Departure_HHMM"])
 
-            st.subheader("Seasonal SoC")
-            p["SOC_arrival_winter_pc"] = st.slider("SoC at arrival (Winter %)", 0, 100, int(p["SOC_arrival_winter_pc"]))
-            p["SOC_arrival_summer_pc"] = st.slider("SoC at arrival (Summer %)", 0, 100, int(p["SOC_arrival_summer_pc"]))
-            p["SOC_departure_target_pc"] = st.slider("SoC required at departure (%)", 0, 100, int(p["SOC_departure_target_pc"]))
-
-        # Right column
-        with c2:
-            st.subheader("OBC Details")
-            p["OBC_Capacity_kW"] = st.number_input("OBC Capacity (kW)", value=float(p["OBC_Capacity_kW"]), step=0.1)
-            p["OBC_UsableCapacity_kW"] = st.number_input("OBC Usable Capacity (kW)", value=float(p["OBC_UsableCapacity_kW"]), step=0.1)
-            p["OBCEfficiency_pc"] = st.number_input("OBC Efficiency (%)", value=float(p["OBCEfficiency_pc"]), step=0.1, min_value=0.0, max_value=100.0)
-
             st.subheader("Charging Unit")
-            p["MaxChargingPower_kW"] = st.number_input("Charging Unit Max Power (kW)", value=float(p["MaxChargingPower_kW"]), step=0.1)
+            p["MaxChargingPower_kW"] = st.number_input(
+                "Charging Unit Max Power (kW)", value=float(p["MaxChargingPower_kW"]), step=0.1
+            )
 
             st.subheader("Season Split")
             p["WinterMonths"] = st.slider("Winter months", 0, 12, int(p["WinterMonths"]))
-            st.write(f"Summer months auto-set to **{12 - int(p['WinterMonths'])}**.")
+            st.caption(f"Summer months auto-set to **{12 - int(p['WinterMonths'])}**.")
 
-            st.subheader("Reefer cycle at stationary")
-            cycle_choice = st.radio("Select", ["Continuous", "Start-Stop", "Reefer OFF"],
-                                    index={"Continuous":0, "Start-Stop":1, "NoReeferStationary":2}.get(p["ReeferCycleInit"], 0))
+        # --- Column 3: Seasonal SoC + Reefer cycle ---
+        with c3:
+            st.subheader("Seasonal SoC")
+            p["SOC_arrival_winter_pc"] = st.slider(
+                "SoC at arrival (Winter %)", 0, 100, int(p["SOC_arrival_winter_pc"])
+            )
+            p["SOC_arrival_summer_pc"] = st.slider(
+                "SoC at arrival (Summer %)", 0, 100, int(p["SOC_arrival_summer_pc"])
+            )
+            p["SOC_departure_target_pc"] = st.slider(
+                "SoC required at departure (%)", 0, 100, int(p["SOC_departure_target_pc"])
+            )
+
+            st.subheader("Reefer Cycle at Stationary")
+            cycle_choice = st.radio(
+                "Select",
+                ["Continuous", "Start-Stop", "Reefer OFF"],
+                index={"Continuous": 0, "Start-Stop": 1, "NoReeferStationary": 2}.get(p["ReeferCycleInit"], 0),
+            )
             p["ReeferCycleInit"] = "NoReeferStationary" if cycle_choice == "Reefer OFF" else cycle_choice
 
-            
-# The submit button MUST be inside this form block:
-        submitted = st.form_submit_button("Calculate")
+        # --- Right-side: prominent Calculate button ---
+        with cBtn:
+            st.write("")  # nudge down a bit
+            st.write("")
+            submitted = st.form_submit_button("Calculate", type="primary")
 
+        # --- Handle submit & validations ---
         if submitted:
             # validations
             if p["UsableBatteryCap_kWh"] <= 0 or p["UsableBatteryCap_kWh"] > p["BatteryCapacity_kWh"]:
