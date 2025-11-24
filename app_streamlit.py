@@ -102,13 +102,13 @@ st.markdown("""
 if submitted:
     if p["UsableBatteryCap_kWh"] <= 0 or p["UsableBatteryCap_kWh"] > p["BatteryCapacity_kWh"]:
         st.error("Usable Battery must be > 0 and ≤ Battery Capacity.")
-        return
+    return
     if any(x < 0 or x > 100 for x in [
         p["BatteryChargingEffi_pc"], p["OBCEfficiency_pc"],
         p["SOC_arrival_winter_pc"], p["SOC_arrival_summer_pc"], p["SOC_departure_target_pc"]
     ]):
         st.error("Efficiency and SoC values must be between 0 and 100%.")
-        return
+    return
     st.session_state.params = p
     st.session_state.show_output = True
     st.rerun()
