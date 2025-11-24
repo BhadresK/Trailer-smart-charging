@@ -3,35 +3,10 @@ import numpy as np
 import pandas as pd
 from datetime import datetime, timedelta
 import matplotlib.pyplot as plt
+import streamlit as st
 import backend as be
 
 st.set_page_config(page_title="Trailer Charging Cost — Interactive", layout="wide")
-
-# -------------------------------------------------------------------
-# --- Authentication using Streamlit Secrets ---
-def load_credentials():
-    if "credentials" in st.secrets:
-        return dict(st.secrets["credentials"])
-    return {}
-
-CREDS = load_credentials()
-
-if "logged_in" not in st.session_state:
-    st.session_state.logged_in = False
-
-if not st.session_state.logged_in:
-    st.title("Login Required")
-    username = st.text_input("Username")
-    password = st.text_input("Password", type="password")
-    if st.button("Login"):
-        if username in CREDS and password == CREDS[username]:
-            st.session_state.logged_in = True
-            st.success("Login successful!")
-            st.rerun()
-        else:
-            st.error("Invalid username or password")
-    st.stop()  # <-- This is critical
-# --- End authentication block ---
 
 # -------------------- MATLAB-aligned defaults --------------------
 DEFAULTS = {
