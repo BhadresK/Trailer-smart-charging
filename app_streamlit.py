@@ -163,7 +163,7 @@ else:
     )
 
 # ---------------------- Reefer preview (in sidebar) -----------------------------------
-with st.sidebar.expander(f"Reefer Cycle — {'Reefer OFF' if cycleUI=='NoReeferStationary' else cycle_label}", expanded=True):
+with st.sidebar.expander(f"Reefer Cycle — {'Reefer OFF' if cycleUI=='NoReeferStationary' else cycleUI}", expanded=True):
     # ≈ 2h preview from arrival (10s resolution)
     t10_prev = [t_arr + timedelta(seconds=i*10) for i in range(int((70*60)/10))]
     if cycleUI == "NoReeferStationary":
