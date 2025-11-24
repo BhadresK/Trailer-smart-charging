@@ -8,7 +8,7 @@ import streamlit as st
 import backend as be
 
 
-st.set_page_config(page_title="EV Charging Cost — Interactive", layout="centered")
+st.set_page_config(page_title="EV Charging Cost — Interactive", layout="wide")
 
 # -------------------- MATLAB-aligned defaults --------------------
 DEFAULTS = {
