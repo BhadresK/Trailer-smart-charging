@@ -110,6 +110,24 @@ w_months  = int(p["WinterMonths"])
 s_months  = 12 - w_months
 cycleUI   = "NoReeferStationary" if p["ReeferCycleInit"] == "NoReeferStationary" else p["ReeferCycleInit"]
 
+# Sidebar inputs in Output GUI (optional for live tweaking)
+st.sidebar.title("Adjust Inputs (Quick Edit)")
+p["Arrival_HHMM"] = st.sidebar.text_input("Arrival Time (HH:MM)", value=p["Arrival_HHMM"])
+p["Departure_HHMM"] = st.sidebar.text_input("Departure Time (HH:MM)", value=p["Departure_HHMM"])
+p["SOC_arrival_winter_pc"] = st.sidebar.slider("Winter SoC at arrival (%)", 0, 100, int(p["SOC_arrival_winter_pc"]))
+p["SOC_arrival_summer_pc"] = st.sidebar.slider("Summer SoC at arrival (%)", 0, 100, int(p["SOC_arrival_summer_pc"]))
+p["SOC_departure_target_pc"] = st.sidebar.slider("SoC required at departure (%)", 0, 100, int(p["SOC_departure_target_pc"]))
+p["WinterMonths"] = st.sidebar.slider("Winter months", 0, 12, int(p["WinterMonths"]))
+st.sidebar.caption(f"Summer months auto-set to **{12 - int(p['WinterMonths'])}**.")
+cycle_choice = st.sidebar.radio("Reefer cycle", ["Continuous", "Start-Stop", "Reefer OFF"],
+                                index={"Continuous":0,"Start-Stop":1,"NoReeferStationary":2}.get(p["ReeferCycleInit"], 0))
+p["ReeferCycleInit"] = "NoReeferStationary" if cycle_choice == "Reefer OFF" else cycle_choice
+
+# Button to apply changes
+if st.sidebar.button("Recalculate"):
+    st.session_state.params = p
+    st.rerun()
+
 # ---------------------- Load data (same as MATLAB) -----------------------------------
 try:
     winterWD, summerWD = be.read_price_excel("avg_price.xlsx")
