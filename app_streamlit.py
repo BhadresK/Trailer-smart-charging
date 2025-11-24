@@ -78,46 +78,7 @@ def render_input_panel():
                                     index={"Continuous":0, "Start-Stop":1, "NoReeferStationary":2}.get(p["ReeferCycleInit"], 0))
             p["ReeferCycleInit"] = "NoReeferStationary" if cycle_choice == "Reefer OFF" else cycle_choice
 
-# Custom styled Calculate button (dark blue)
-submitted = st.form_submit_button(
-    "Calculate",
-    help="Click to calculate and show output"
-)
-
-# Inject CSS for button color
-st.markdown("""
-    <style>
-    div.stButton > button:first-child {
-        background-color: #004080; /* Dark Blue */
-        color: white;
-        font-weight: bold;
-        border-radius: 6px;
-        padding: 0.6em 1.2em;
-    }
-    div.stButton > button:first-child:hover {
-        background-color: #003366; /* Slightly darker on hover */
-    }
-    </style>
-""", unsafe_allow_html=True)
-
-# Handle form submission
-if submitted:
-    # Validation checks
-    if p["UsableBatteryCap_kWh"] <= 0 or p["UsableBatteryCap_kWh"] > p["BatteryCapacity_kWh"]:
-        st.error("Usable Battery must be > 0 and ≤ Battery Capacity.")
-        st.stop()  # ✅ Use st.stop() instead of return
-
-    if any(x < 0 or x > 100 for x in [
-        p["BatteryChargingEffi_pc"], p["OBCEfficiency_pc"],
-        p["SOC_arrival_winter_pc"], p["SOC_arrival_summer_pc"], p["SOC_departure_target_pc"]
-    ]):
-        st.error("Efficiency and SoC values must be between 0 and 100%.")
-        st.stop()  # ✅ Use st.stop() instead of return
-
-    # Save and reroute to Output GUI
-    st.session_state.params = p
-    st.session_state.show_output = True
-    st.rerun()  # ✅ Correct for Streamlit Cloud
+submitted = st.form_submit_button("Calculate")
 
 # -------------------- ROUTING: input first, then output --------------------
 if not st.session_state.show_output:
