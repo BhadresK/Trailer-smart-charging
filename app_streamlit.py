@@ -99,17 +99,6 @@ if not st.session_state.show_output:
     render_input_panel()
     st.stop()  # do not run the output logic below until user clicks Calculate
 
-# ---- After Calculate: pull values from session_state.params ----
-p = st.session_state.params
-arr_str = p["Arrival_HHMM"]
-dep_str = p["Departure_HHMM"]
-soc_arr_w = int(p["SOC_arrival_winter_pc"])
-soc_arr_s = int(p["SOC_arrival_summer_pc"])
-soc_tgt   = int(p["SOC_departure_target_pc"])
-w_months  = int(p["WinterMonths"])
-s_months  = 12 - w_months
-cycleUI   = "NoReeferStationary" if p["ReeferCycleInit"] == "NoReeferStationary" else p["ReeferCycleInit"]
-
 # Sidebar inputs in Output GUI (optional for live tweaking)
 st.sidebar.title("Adjust Inputs (Quick Edit)")
 p["Arrival_HHMM"] = st.sidebar.text_input("Arrival Time (HH:MM)", value=p["Arrival_HHMM"])
@@ -125,6 +114,17 @@ p["ReeferCycleInit"] = "NoReeferStationary" if cycle_choice == "Reefer OFF" else
 
 # Automatically update session state when any sidebar widget changes
 st.session_state.params = p
+
+# ---- After Calculate: pull values from session_state.params ----
+p = st.session_state.params
+arr_str = p["Arrival_HHMM"]
+dep_str = p["Departure_HHMM"]
+soc_arr_w = int(p["SOC_arrival_winter_pc"])
+soc_arr_s = int(p["SOC_arrival_summer_pc"])
+soc_tgt   = int(p["SOC_departure_target_pc"])
+w_months  = int(p["WinterMonths"])
+s_months  = 12 - w_months
+cycleUI   = "NoReeferStationary" if p["ReeferCycleInit"] == "NoReeferStationary" else p["ReeferCycleInit"]
 
 # ---------------------- Load data (same as MATLAB) -----------------------------------
 try:
