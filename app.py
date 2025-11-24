@@ -56,15 +56,15 @@ def render_input_panel():
         st.session_state.WinterMonths = 12 - st.session_state.SummerMonths
 
     # Two sliders with keys and callbacks
-    st.session_state.WinterMonths = st.slider(
+    st.slider(
         "Winter months", 0, 12, st.session_state.WinterMonths,
         key="WinterMonths", on_change=update_winter
     )
-    st.session_state.SummerMonths = st.slider(
+    st.slider(
         "Summer months", 0, 12, st.session_state.SummerMonths,
         key="SummerMonths", on_change=update_summer
     )
-
+    
     # Update p values for later calculations
     p["WinterMonths"] = st.session_state.WinterMonths
     p["SummerMonths"] = st.session_state.SummerMonths
