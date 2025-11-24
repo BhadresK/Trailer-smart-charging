@@ -105,19 +105,6 @@ def render_input_panel():
 if not st.session_state.show_output:
     render_input_panel()
     st.stop()  # do not run the output logic below until user clicks Calculate
-
-
-# ---------------------------------------------------------------------------
-
-plt.rcParams.update({
-    'font.size': 8,          # smaller text everywhere
-    'axes.labelsize': 8,
-    'axes.titlesize': 9,
-    'xtick.labelsize': 7,
-    'ytick.labelsize': 7,
-    'legend.fontsize': 8
-})
-
 # ---------------------------------------------------------------------------
 
 p = st.session_state.params
