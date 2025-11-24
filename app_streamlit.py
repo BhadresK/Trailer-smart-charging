@@ -381,19 +381,17 @@ for h in range(24):
 # Render figure
 st.pyplot(figS, use_container_width=True)
 
-# ---------------------- Tables (under graphs) -----------------------------------------
-# Create three tables side by side in one row
-col1, col2, col3 = st.columns([1, 1, 1])  # equal width columns
+# Three tables in one row
+col1, col2, col3 = st.columns([1, 1, 1])
 
 with col1:
     st.markdown("#### Battery Charging Cost (€)")
     df_charge = pd.DataFrame([
         ["Energy needed (kWh)", f"{needW_kWh:.2f}", f"{needS_kWh:.2f}"],
-        ["Fixed Price Charging", f"{cost_fixed_W_EV:.2f}", f"{cost_fixed_S_EV:.2f}"],
         ["Dumb Charging", f"{Wbase['cost_EUR']:.2f}", f"{Sbase['cost_EUR']:.2f}"],
         ["Smart Charging", f"{Wsmart['cost_EUR']:.2f}", f"{Ssmart['cost_EUR']:.2f}"],
     ], columns=["Metric", "Winter", "Summer"])
-    st.table(df_charge)  # ✅ st.table for compact display (no index)
+    st.table(df_charge)
 
 with col2:
     st.markdown("#### Reefer Consumption (€)")
@@ -401,8 +399,7 @@ with col2:
         ["Energy used by trailer (kWh)", f"{RW['E_kWh']:.2f}", f"{RS['E_kWh']:.2f}"],
         ["Diesel powered", f"{RW['cost_diesel']:.2f}", f"{RS['cost_diesel']:.2f}"],
         ["Fixed electricity price", f"{RW['cost_fixed']:.2f}", f"{RS['cost_fixed']:.2f}"],
-        ["Dumb Charging", f"{RW['cost_dynamic']:.2f}", f"{RS['cost_dynamic']:.2f}"],
-        ["Smart Charging", f"{RW['cost_dynamic']:.2f}", f"{RS['cost_dynamic']:.2f}"],
+        ["Dynamic Pricing", f"{RW['cost_dynamic']:.2f}", f"{RS['cost_dynamic']:.2f}"],
     ], columns=["Metric", "Winter", "Summer"])
     st.table(df_trailer)
 
@@ -416,7 +413,6 @@ with col3:
         ["Savings (Smart vs Dumb)", f"€{sav_smart_vs_dumb:.2f}"],
     ], columns=["Metric", "Value"])
     st.table(df_yearly)
-
 
 
 
