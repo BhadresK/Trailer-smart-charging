@@ -39,35 +39,32 @@ def render_input_panel():
 
     p = st.session_state.params  # shorthand
 
-    # --- Season Split sliders outside the form ---
+    # --- Season Split (outside the form) ---
     st.subheader("Season Split")
-
-    # Initialize both if not present
-    if "WinterMonths" not in st.session_state:
-        st.session_state.WinterMonths = p["WinterMonths"]
-    if "SummerMonths" not in st.session_state:
-        st.session_state.SummerMonths = 12 - p["WinterMonths"]
-
-    # Callback functions to keep total = 12
-    def update_winter():
-        st.session_state.SummerMonths = 12 - st.session_state.WinterMonths
-
-    def update_summer():
-        st.session_state.WinterMonths = 12 - st.session_state.SummerMonths
-
-    # Two sliders with keys and callbacks
-    st.slider(
-        "Winter months", 0, 12, st.session_state.WinterMonths,
-        key="WinterMonths", on_change=update_winter
-    )
-    st.slider(
-        "Summer months", 0, 12, st.session_state.SummerMonths,
-        key="SummerMonths", on_change=update_summer
+    
+    # Defaults from current params
+    winter_default = int(p["WinterMonths"])
+    summer_default = 12 - winter_default
+    
+    # Let user choose which side to adjust; the other is derived so total stays 12
+    adjust_by = st.radio(
+        "Adjust by", ["Winter months", "Summer months"],
+        horizontal=True, index=0
     )
     
-    # Update p values for later calculations
-    p["WinterMonths"] = st.session_state.WinterMonths
-    p["SummerMonths"] = st.session_state.SummerMonths
+    if adjust_by == "Winter months":
+        winter = st.slider("Winter months", 0, 12, winter_default)
+        summer = 12 - winter
+        # show derived value as a read-only slider for visual symmetry
+        st.slider("Summer months", 0, 12, summer, disabled=True)
+    else:
+        summer = st.slider("Summer months", 0, 12, summer_default)
+        winter = 12 - summer
+        st.slider("Winter months", 0, 12, winter, disabled=True)
+    
+    # Persist into params for downstream calculations
+    p["WinterMonths"] = winter
+    p["SummerMonths"] = summer
 
     # --- Now start the form ---
     with st.form(key="input_form", clear_on_submit=False):
