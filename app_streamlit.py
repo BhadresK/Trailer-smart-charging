@@ -78,7 +78,28 @@ def render_input_panel():
                                     index={"Continuous":0, "Start-Stop":1, "NoReeferStationary":2}.get(p["ReeferCycleInit"], 0))
             p["ReeferCycleInit"] = "NoReeferStationary" if cycle_choice == "Reefer OFF" else cycle_choice
 
-        submitted = st.form_submit_button("Calculate")
+        # Custom styled Calculate button (dark blue)
+submitted = st.form_submit_button(
+    "Calculate",
+    help="Click to calculate and show output"
+)
+
+# Inject CSS for button color
+st.markdown("""
+    <style>
+    div.stButton > button:first-child {
+        background-color: #004080; /* Dark Blue */
+        color: white;
+        font-weight: bold;
+        border-radius: 6px;
+        padding: 0.6em 1.2em;
+    }
+    div.stButton > button:first-child:hover {
+        background-color: #003366; /* Slightly darker on hover */
+    }
+    </style>
+""", unsafe_allow_html=True)
+
         if submitted:
             # simple validations (like MATLAB)
             if p["UsableBatteryCap_kWh"] <= 0 or p["UsableBatteryCap_kWh"] > p["BatteryCapacity_kWh"]:
