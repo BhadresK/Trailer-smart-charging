@@ -40,19 +40,8 @@ def render_input_panel():
     p = st.session_state.params  # shorthand
     
     # --- Now start the form ---
-        c1, c2, c3, cBtn = st.columns([1, 1, 1, 0.35])
-
-    with c2:
-        st.subheader("Season Split")
-        winter = st.slider("Winter months", 0, 12, int(p["WinterMonths"]))
-        summer = 12 - winter
-        summer = st.slider("Summer months", 0, 12, int(p["SummerMonths"]))
-    
-        # Update params for later calculations
-        p["WinterMonths"] = winter
-        p["SummerMonths"] = summer     
-
     with st.form(key="input_form", clear_on_submit=False):
+        c1, c2, c3, cBtn = st.columns([1, 1, 1, 0.35])
         
         # Column 1: Battery + OBC
         with c1:
@@ -76,6 +65,15 @@ def render_input_panel():
             p["MaxChargingPower_kW"] = st.number_input(
                 "Charging Unit Max Power (kW)", value=float(p["MaxChargingPower_kW"]), step=0.1
             )
+        with c2:
+            st.subheader("Season Split")
+            winter = st.slider("Winter months", 0, 12, int(p["WinterMonths"]))
+            summer = 12 - winter
+            summer = st.slider("Summer months", 0, 12, int(p["SummerMonths"]))
+        
+            # Update params for later calculations
+            p["WinterMonths"] = winter
+            p["SummerMonths"] = summer  
 
         # Column 3: Seasonal SoC + Reefer Cycle
         with c3:
