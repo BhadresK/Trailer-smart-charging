@@ -382,44 +382,43 @@ for h in range(24):
 st.pyplot(figS, use_container_width=True)
 
 # ---------------------- Tables (under graphs) -----------------------------------------
-st.markdown("### Battery Charging Cost Comparison (in €)")
-rp = be.get_reefer_cost_params()
-cost_fixed_W_EV = Wbase["energy_kWh"] * rp.FixedPrice_EUR_per_kWh
-cost_fixed_S_EV = Sbase["energy_kWh"] * rp.FixedPrice_EUR_per_kWh
-df_charge = pd.DataFrame([
-    ("Energy needed (kWh)", f"{needW_kWh:.2f}", f"{needS_kWh:.2f}"),
-    ("Fixed Price Charging", f"{cost_fixed_W_EV:.2f}", f"{cost_fixed_S_EV:.2f}"),
-    ("Dumb Charging", f"{Wbase['cost_EUR']:.2f}", f"{Sbase['cost_EUR']:.2f}"),
-    ("Smart Charging", f"{Wsmart['cost_EUR']:.2f}", f"{Ssmart['cost_EUR']:.2f}"),
-], columns=["Metric","Winter","Summer"])
-st.dataframe(df_charge, use_container_width=True)
+# Create three tables side by side in one row
+col1, col2, col3 = st.columns([1, 1, 1])  # equal width columns
 
-st.markdown("### Reefer Consumption Cost Comparison (in €)")
-RW = be.compute_reefer_cost_scenarios(P_refr_min_kW, dt_hr, Wsmart["price_min"], rp)
-RS = be.compute_reefer_cost_scenarios(P_refr_min_kW, dt_hr, Ssmart["price_min"], rp)
-df_trailer = pd.DataFrame([
-    ("Energy used by trailer (kWh)", f"{RW['E_kWh']:.2f}", f"{RS['E_kWh']:.2f}"),
-    ("Diesel powered", f"{RW['cost_diesel']:.2f}", f"{RS['cost_diesel']:.2f}"),
-    ("Fixed electricity price", f"{RW['cost_fixed']:.2f}", f"{RS['cost_fixed']:.2f}"),
-    ("Dumb Charging", f"{RW['cost_dynamic']:.2f}", f"{RS['cost_dynamic']:.2f}"),
-    ("Smart Charging", f"{RW['cost_dynamic']:.2f}", f"{RS['cost_dynamic']:.2f}"),
-], columns=["Metric","Winter","Summer"])
-st.dataframe(df_trailer, use_container_width=True)
+with col1:
+    st.markdown("#### Battery Charging Cost (€)")
+    df_charge = pd.DataFrame([
+        ["Energy needed (kWh)", f"{needW_kWh:.2f}", f"{needS_kWh:.2f}"],
+        ["Fixed Price Charging", f"{cost_fixed_W_EV:.2f}", f"{cost_fixed_S_EV:.2f}"],
+        ["Dumb Charging", f"{Wbase['cost_EUR']:.2f}", f"{Sbase['cost_EUR']:.2f}"],
+        ["Smart Charging", f"{Wsmart['cost_EUR']:.2f}", f"{Ssmart['cost_EUR']:.2f}"],
+    ], columns=["Metric", "Winter", "Summer"])
+    st.table(df_charge)  # ✅ st.table for compact display (no index)
 
-st.markdown("### Estimated Yearly Values (in € ; 20 Days/ Month)")
-yearly_fixed = cost_fixed_W_EV*20*w_months + cost_fixed_S_EV*20*s_months
-yearly_dumb  = Wbase['cost_EUR']*20*w_months + Sbase['cost_EUR']*20*s_months
-yearly_smart = Wsmart['cost_EUR']*20*w_months + Ssmart['cost_EUR']*20*s_months
-sav_smart_vs_fixed = yearly_fixed - yearly_smart
-sav_smart_vs_dumb  = yearly_dumb - yearly_smart
-df_yearly = pd.DataFrame([
-    ("Fixed Price Charging Cost", f"€{yearly_fixed:.2f}"),
-    ("Dumb Charging Cost", f"€{yearly_dumb:.2f}"),
-    ("Smart Charging Cost", f"€{yearly_smart:.2f}"),
-    ("Savings (Smart vs Fixed Price Charging)", f"€{sav_smart_vs_fixed:.2f}"),
-    ("Savings (Smart vs Dumb Charging)", f"€{sav_smart_vs_dumb:.2f}"),
-], columns=["Metric","Value"])
-st.dataframe(df_yearly, use_container_width=True)
+with col2:
+    st.markdown("#### Reefer Consumption (€)")
+    df_trailer = pd.DataFrame([
+        ["Energy used by trailer (kWh)", f"{RW['E_kWh']:.2f}", f"{RS['E_kWh']:.2f}"],
+        ["Diesel powered", f"{RW['cost_diesel']:.2f}", f"{RS['cost_diesel']:.2f}"],
+        ["Fixed electricity price", f"{RW['cost_fixed']:.2f}", f"{RS['cost_fixed']:.2f}"],
+        ["Dumb Charging", f"{RW['cost_dynamic']:.2f}", f"{RS['cost_dynamic']:.2f}"],
+        ["Smart Charging", f"{RW['cost_dynamic']:.2f}", f"{RS['cost_dynamic']:.2f}"],
+    ], columns=["Metric", "Winter", "Summer"])
+    st.table(df_trailer)
+
+with col3:
+    st.markdown("#### Yearly Values (€)")
+    df_yearly = pd.DataFrame([
+        ["Fixed Price Charging Cost", f"€{yearly_fixed:.2f}"],
+        ["Dumb Charging Cost", f"€{yearly_dumb:.2f}"],
+        ["Smart Charging Cost", f"€{yearly_smart:.2f}"],
+        ["Savings (Smart vs Fixed)", f"€{sav_smart_vs_fixed:.2f}"],
+        ["Savings (Smart vs Dumb)", f"€{sav_smart_vs_dumb:.2f}"],
+    ], columns=["Metric", "Value"])
+    st.table(df_yearly)
+
+
+
 
 with st.expander("Understanding This Panel", expanded=False):
     st.write(
