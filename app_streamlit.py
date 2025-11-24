@@ -252,11 +252,9 @@ colS_dumb = (0.70, 0.70, 0.70); colS_smart = (1.00, 0.60, 0.20)
 colSoC_d = (0.50, 0.50, 0.50); colSoC_s = (0.00, 0.00, 0.00)
 colPrLn = (0.00, 0.60, 0.00); colPrTx = (0.00, 0.45, 0.15)
 
+
+
 import matplotlib.lines as mlines
-
-
-
-
 # Thinner legend strokes to save space
 legend_items = [
     mlines.Line2D([], [], color=colW_dumb,  lw=5, label='Dumb Power'),
@@ -274,12 +272,12 @@ figLegend.legend(
     loc='upper center',
     ncol=3,
     frameon=False,
-    prop={'size': 8},        # smaller font
+    prop={'size': 4},        # smaller font
     handlelength=1.0,        # shorter line samples
-    handletextpad=0.6,       # less gap between line and text
+    handletextpad=0.3,       # less gap between line and text
     borderpad=0.2,           # tighter box padding
-    labelspacing=0.4,        # less vertical spacing
-    columnspacing=0.8        # tighter gap between columns
+    labelspacing=0.2,        # less vertical spacing
+    columnspacing=0.4        # tighter gap between columns
 )
 
 # Trim extra margins
