@@ -78,7 +78,27 @@ def render_input_panel():
                                     index={"Continuous":0, "Start-Stop":1, "NoReeferStationary":2}.get(p["ReeferCycleInit"], 0))
             p["ReeferCycleInit"] = "NoReeferStationary" if cycle_choice == "Reefer OFF" else cycle_choice
 
-submitted = st.form_submit_button("Calculate")
+            
+# The submit button MUST be inside this form block:
+        submitted = st.form_submit_button("Calculate")
+
+        if submitted:
+            # validations
+            if p["UsableBatteryCap_kWh"] <= 0 or p["UsableBatteryCap_kWh"] > p["BatteryCapacity_kWh"]:
+                st.error("Usable Battery must be > 0 and ≤ Battery Capacity.")
+                return
+            if any(x < 0 or x > 100 for x in [
+                p["BatteryChargingEffi_pc"], p["OBCEfficiency_pc"],
+                p["SOC_arrival_winter_pc"], p["SOC_arrival_summer_pc"], p["SOC_departure_target_pc"]
+            ]):
+                st.error("Efficiency and SoC values must be between 0 and 100%.")
+                return
+
+            # Save and go to Output GUI
+            st.session_state.params = p
+            st.session_state.show_output = True
+            st.rerun()
+
 
 # -------------------- ROUTING: input first, then output --------------------
 if not st.session_state.show_output:
@@ -396,64 +416,4 @@ with st.expander("Understanding This Panel", expanded=False):
 12. Diesel price: €{rp.DieselPrice_EUR_per_L:.2f}/L; DG efficiency: {int(100*rp.Genset_efficiency_frac)}%; Energy density: {rp.Diesel_kWh_per_L:.1f} kWh/L.
 """
     )
-
-def render_input_panel():
-    st.title("EV & Reefer — Input Parameters")
-    st.caption("These defaults mirror your MATLAB input dialog. Adjust if needed, then click **Calculate** to open the Output GUI.")  # MATLAB parity
-
-    p = st.session_state.params  # shorthand
-
-    # Single form to collect all inputs
-    with st.form(key="input_form", clear_on_submit=False):
-        c1, c2 = st.columns(2)
-
-        # --- Left column: Battery Details ---
-        with c1:
-            st.subheader("Battery Details")
-            p["BatteryCapacity_kWh"] = st.number_input("Battery Capacity (kWh)", value=float(p["BatteryCapacity_kWh"]), step=0.1)
-            p["UsableBatteryCap_kWh"] = st.number_input("Usable Battery Capacity (kWh)", value=float(p["UsableBatteryCap_kWh"]), step=0.1)
-            p["BatteryChargingEffi_pc"] = st.number_input("Battery Charging Efficiency (%)", value=float(p["BatteryChargingEffi_pc"]), step=0.1, min_value=0.0, max_value=100.0)
-
-            st.subheader("Arrival & Departure")
-            p["Arrival_HHMM"] = st.text_input("Arrival Time (HH:MM)", value=p["Arrival_HHMM"])
-            p["Departure_HHMM"] = st.text_input("Departure Time (HH:MM)", value=p["Departure_HHMM"])
-
-            st.subheader("Seasonal SoC")
-            p["SOC_arrival_winter_pc"] = st.slider("SoC at arrival (Winter %)", 0, 100, int(p["SOC_arrival_winter_pc"]))
-            p["SOC_arrival_summer_pc"] = st.slider("SoC at arrival (Summer %)", 0, 100, int(p["SOC_arrival_summer_pc"]))
-            p["SOC_departure_target_pc"] = st.slider("SoC required at departure (%)", 0, 100, int(p["SOC_departure_target_pc"]))
-
-        # --- Right column: OBC / Site ---
-        with c2:
-            st.subheader("OBC Details")
-            p["OBC_Capacity_kW"] = st.number_input("OBC Capacity (kW)", value=float(p["OBC_Capacity_kW"]), step=0.1)
-            p["OBC_UsableCapacity_kW"] = st.number_input("OBC Usable Capacity (kW)", value=float(p["OBC_UsableCapacity_kW"]), step=0.1)
-            p["OBCEfficiency_pc"] = st.number_input("OBC Efficiency (%)", value=float(p["OBCEfficiency_pc"]), step=0.1, min_value=0.0, max_value=100.0)
-
-            st.subheader("Charging Unit")
-            p["MaxChargingPower_kW"] = st.number_input("Charging Unit Max Power (kW)", value=float(p["MaxChargingPower_kW"]), step=0.1)
-
-            st.subheader("Season Split")
-            p["WinterMonths"] = st.slider("Winter months", 0, 12, int(p["WinterMonths"]))
-            # Auto-complement summer months; no input here to keep parity
-            summer_months_preview = 12 - int(p["WinterMonths"])
-            st.write(f"Summer months auto-set to **{summer_months_preview}**.")
-
-            st.subheader("Reefer cycle at stationary")
-            cycle_choice = st.radio("Select", ["Continuous", "Start-Stop", "Reefer OFF"], index={"Continuous":0,"Start-Stop":1,"NoReeferStationary":2}.get(p["ReeferCycleInit"], 0))
-            p["ReeferCycleInit"] = "NoReeferStationary" if cycle_choice == "Reefer OFF" else cycle_choice
-
-        # Submit button
-        submitted = st.form_submit_button("Calculate")
-        if submitted:
-            # Validate basic ranges (mirroring MATLAB constraints)
-            if p["UsableBatteryCap_kWh"] <= 0 or p["UsableBatteryCap_kWh"] > p["BatteryCapacity_kWh"]:
-                st.error("Usable Battery must be > 0 and ≤ Battery Capacity.")
-                return
-            if any(x < 0 or x > 100 for x in [p["BatteryChargingEffi_pc"], p["OBCEfficiency_pc"], p["SOC_arrival_winter_pc"], p["SOC_arrival_summer_pc"], p["SOC_departure_target_pc"]]):
-                st.error("Efficiency and SoC values must be between 0 and 100%.")
-                return
-            # Proceed to Output GUI
-            st.session_state.show_output = True
-            st.session_state.params = p
 
