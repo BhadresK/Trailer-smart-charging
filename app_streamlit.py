@@ -78,7 +78,7 @@ def render_input_panel():
                                     index={"Continuous":0, "Start-Stop":1, "NoReeferStationary":2}.get(p["ReeferCycleInit"], 0))
             p["ReeferCycleInit"] = "NoReeferStationary" if cycle_choice == "Reefer OFF" else cycle_choice
 
-        # Custom styled Calculate button (dark blue)
+# Custom styled Calculate button (dark blue)
 submitted = st.form_submit_button(
     "Calculate",
     help="Click to calculate and show output"
@@ -99,16 +99,22 @@ st.markdown("""
     }
     </style>
 """, unsafe_allow_html=True)
+
+# Handle form submission
 if submitted:
+    # Validation checks
     if p["UsableBatteryCap_kWh"] <= 0 or p["UsableBatteryCap_kWh"] > p["BatteryCapacity_kWh"]:
         st.error("Usable Battery must be > 0 and ≤ Battery Capacity.")
-    return
+        return
+
     if any(x < 0 or x > 100 for x in [
         p["BatteryChargingEffi_pc"], p["OBCEfficiency_pc"],
         p["SOC_arrival_winter_pc"], p["SOC_arrival_summer_pc"], p["SOC_departure_target_pc"]
     ]):
         st.error("Efficiency and SoC values must be between 0 and 100%.")
-    return
+        return
+
+    # Save and reroute to Output GUI
     st.session_state.params = p
     st.session_state.show_output = True
     st.rerun()
