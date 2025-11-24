@@ -70,7 +70,7 @@ def render_input_panel():
             st.subheader("Season Split")
             winter = st.slider("Winter months", 0, 12, int(p["WinterMonths"]))
             summer = 12 - winter
-            summer = st.slider("Summer months", 0, 12,p["SummerMonths"])
+            summer = st.slider("Summer months", 0, 12, int(p["SummerMonths"]))
         
             # Update params for later calculations
             p["WinterMonths"] = winter
