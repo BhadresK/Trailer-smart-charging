@@ -123,10 +123,8 @@ cycle_choice = st.sidebar.radio("Reefer cycle", ["Continuous", "Start-Stop", "Re
                                 index={"Continuous":0,"Start-Stop":1,"NoReeferStationary":2}.get(p["ReeferCycleInit"], 0))
 p["ReeferCycleInit"] = "NoReeferStationary" if cycle_choice == "Reefer OFF" else cycle_choice
 
-# Button to apply changes
-if st.sidebar.button("Recalculate"):
-    st.session_state.params = p
-    st.rerun()
+# Automatically update session state when any sidebar widget changes
+st.session_state.params = p
 
 # ---------------------- Load data (same as MATLAB) -----------------------------------
 try:
