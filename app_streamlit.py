@@ -266,7 +266,7 @@ legend_items = [
 ]
 
 # Smaller figure height and tighter legend spacing
-figLegend = plt.figure(figsize=(8, 0.35))  # width, height (inches)
+figLegend = plt.figure(figsize=(4, 0.2))  # width, height (inches)
 figLegend.legend(
     handles=legend_items,
     loc='upper center',
