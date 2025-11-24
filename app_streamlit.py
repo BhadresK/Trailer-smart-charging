@@ -3,50 +3,34 @@ import numpy as np
 import pandas as pd
 from datetime import datetime, timedelta
 import matplotlib.pyplot as plt
-import streamlit as st
 import backend as be
 
 st.set_page_config(page_title="Trailer Charging Cost — Interactive", layout="wide")
 
 # -------------------------------------------------------------------
 # --- Authentication using Streamlit Secrets ---
-# Expect either [credentials] mapping or two lists APP_USERS / APP_PASSWORDS
 def load_credentials():
     if "credentials" in st.secrets:
-        # Mapping style: {username: password}
         return dict(st.secrets["credentials"])
-    else:
-        users = list(st.secrets.get("APP_USERS", []))
-        pwds  = list(st.secrets.get("APP_PASSWORDS", []))
-        return dict(zip(users, pwds))
+    return {}
 
 CREDS = load_credentials()
 
-# Initialize session auth flag once
 if "logged_in" not in st.session_state:
     st.session_state.logged_in = False
-if "login_user" not in st.session_state:
-    st.session_state.login_user = None
 
-# Guard: show login before any app content
 if not st.session_state.logged_in:
-    st.title("Login required")
-    u = st.text_input("Username")
-    p = st.text_input("Password", type="password")
-    col1, col2 = st.columns(2)
-    with col1:
-        if st.button("Login", type="primary"):
-            if u in CREDS and p == CREDS[u]:
-                st.session_state.logged_in = True
-                st.session_state.login_user = u
-                st.success("Login successful")
-                st.rerun()  # reload app in authenticated state
-            else:
-                st.error("Invalid username or password")
-    with col2:
-        # Optional: small help
-        st.caption("Use your assigned credentials.")
-    st.stop()  # prevent rest of the app from running
+    st.title("Login Required")
+    username = st.text_input("Username")
+    password = st.text_input("Password", type="password")
+    if st.button("Login"):
+        if username in CREDS and password == CREDS[username]:
+            st.session_state.logged_in = True
+            st.success("Login successful!")
+            st.rerun()
+        else:
+            st.error("Invalid username or password")
+    st.stop()  # <-- This is critical
 # --- End authentication block ---
 
 # -------------------- MATLAB-aligned defaults --------------------
