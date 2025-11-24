@@ -268,18 +268,18 @@ legend_items = [
 ]
 
 # Smaller figure height and tighter legend spacing
-figLegend = plt.figure(figsize=(8, 0.25))  # width, height (inches)
+figLegend = plt.figure(figsize=(10, 0.3))  # width, height (inches)
 figLegend.legend(
     handles=legend_items,
     loc='upper center',
     ncol=len(legend_items),
     frameon=False,
-    prop={'size': 4},        # smaller font
-    handlelength=0.8,        # shorter line samples
-    handletextpad=0.4,       # less gap between line and text
-    borderpad=0.1,           # tighter box padding
-    labelspacing=0.2,        # less vertical spacing
-    columnspacing=0.5        # tighter gap between columns
+    prop={'size': 6},        # smaller font
+    handlelength=1,        # shorter line samples
+    handletextpad=0.6,       # less gap between line and text
+    borderpad=0.2,           # tighter box padding
+    labelspacing=0.4,        # less vertical spacing
+    columnspacing=1.2        # tighter gap between columns
 )
 
 # Trim extra margins
