@@ -105,19 +105,19 @@ if submitted:
     # Validation checks
     if p["UsableBatteryCap_kWh"] <= 0 or p["UsableBatteryCap_kWh"] > p["BatteryCapacity_kWh"]:
         st.error("Usable Battery must be > 0 and ≤ Battery Capacity.")
-        return
+        st.stop()  # ✅ Use st.stop() instead of return
 
     if any(x < 0 or x > 100 for x in [
         p["BatteryChargingEffi_pc"], p["OBCEfficiency_pc"],
         p["SOC_arrival_winter_pc"], p["SOC_arrival_summer_pc"], p["SOC_departure_target_pc"]
     ]):
         st.error("Efficiency and SoC values must be between 0 and 100%.")
-        return
+        st.stop()  # ✅ Use st.stop() instead of return
 
     # Save and reroute to Output GUI
     st.session_state.params = p
     st.session_state.show_output = True
-    st.rerun()
+    st.rerun()  # ✅ Correct for Streamlit Cloud
 
 # -------------------- ROUTING: input first, then output --------------------
 if not st.session_state.show_output:
