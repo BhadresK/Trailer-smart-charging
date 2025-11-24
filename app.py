@@ -65,7 +65,7 @@ def render_input_panel():
             p["MaxChargingPower_kW"] = st.number_input(
                 "Charging Unit Max Power (kW)", value=float(p["MaxChargingPower_kW"]), step=0.1
             )
-        with c2:
+            
             st.subheader("Season Split")
             winter = st.slider("Winter months", 0, 12, int(p["WinterMonths"]))
             summer = 12 - winter
