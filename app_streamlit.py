@@ -252,20 +252,42 @@ colS_dumb = (0.70, 0.70, 0.70); colS_smart = (1.00, 0.60, 0.20)
 colSoC_d = (0.50, 0.50, 0.50); colSoC_s = (0.00, 0.00, 0.00)
 colPrLn = (0.00, 0.60, 0.00); colPrTx = (0.00, 0.45, 0.15)
 
-# ---- Combined legend for both graphs (top, outside)
 import matplotlib.lines as mlines
+
+
+
+
+# Thinner legend strokes to save space
 legend_items = [
-    mlines.Line2D([], [], color=colW_dumb,  lw=8, label='Dumb Power'),
-    mlines.Line2D([], [], color=colW_smart, lw=8, label='Winter Smart Power'),
-    mlines.Line2D([], [], color=colS_smart, lw=8, label='Summer Smart Power'),
-    mlines.Line2D([], [], color=colSoC_d,   lw=2, label='SoC Dumb'),
-    mlines.Line2D([], [], color=colSoC_s,   lw=2, label='SoC Smart'),
-    mlines.Line2D([], [], color=colPrLn,    lw=2, label='Hourly Electricity Price'),
+    mlines.Line2D([], [], color=colW_dumb,  lw=5, label='Dumb Power'),
+    mlines.Line2D([], [], color=colW_smart, lw=5, label='Winter Smart Power'),
+    mlines.Line2D([], [], color=colS_smart, lw=5, label='Summer Smart Power'),
+    mlines.Line2D([], [], color=colSoC_d,   lw=1.5, label='SoC Dumb'),
+    mlines.Line2D([], [], color=colSoC_s,   lw=1.5, label='SoC Smart'),
+    mlines.Line2D([], [], color=colPrLn,    lw=1.5, label='Hourly Electricity Price'),
 ]
 
-figLegend = plt.figure(figsize=(10, 0.6))
-figLegend.legend(handles=legend_items, loc='upper center', ncol=3, frameon=False)
+# Smaller figure height and tighter legend spacing
+figLegend = plt.figure(figsize=(8, 0.35))  # width, height (inches)
+figLegend.legend(
+    handles=legend_items,
+    loc='upper center',
+    ncol=3,
+    frameon=False,
+    prop={'size': 8},        # smaller font
+    handlelength=1.0,        # shorter line samples
+    handletextpad=0.6,       # less gap between line and text
+    borderpad=0.2,           # tighter box padding
+    labelspacing=0.4,        # less vertical spacing
+    columnspacing=0.8        # tighter gap between columns
+)
+
+# Trim extra margins
+figLegend.tight_layout(pad=0.1)
+
 st.pyplot(figLegend, use_container_width=True)
+
+
 
 # ---- Winter (full-width)
 figW, axW = plt.subplots(figsize=(12, 4))
