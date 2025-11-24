@@ -66,13 +66,30 @@ def render_input_panel():
                 "Charging Unit Max Power (kW)", value=float(p["MaxChargingPower_kW"]), step=0.1
             )
         
-            # --- Season Split inside Column 2 ---
+            # --- Season Split (outside the form) ---
             st.subheader("Season Split")
-            winter = st.slider("Winter months", 0, 12, int(p["WinterMonths"]))
-            summer = 12 - winter
-            st.slider("Summer months", 0, 12, summer, disabled=True)
-        
-            # Update params
+            
+            # Defaults from current params
+            winter_default = int(p["WinterMonths"])
+            summer_default = 12 - winter_default
+            
+            # Let user choose which side to adjust; the other is derived so total stays 12
+            adjust_by = st.radio(
+                "Adjust by", ["Winter months", "Summer months"],
+                horizontal=True, index=0
+            )
+            
+            if adjust_by == "Winter months":
+                winter = st.slider("Winter months", 0, 12, winter_default)
+                summer = 12 - winter
+                # show derived value as a read-only slider for visual symmetry
+                st.slider("Summer months", 0, 12, summer, disabled=True)
+            else:
+                summer = st.slider("Summer months", 0, 12, summer_default)
+                winter = 12 - summer
+                st.slider("Winter months", 0, 12, winter, disabled=True)
+            
+            # Persist into params for downstream calculations
             p["WinterMonths"] = winter
             p["SummerMonths"] = summer
 
