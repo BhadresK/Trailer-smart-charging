@@ -99,8 +99,7 @@ if not st.session_state.show_output:
     render_input_panel()
     st.stop()  # do not run the output logic below until user clicks Calculate
 
-# Automatically update session state when any sidebar widget changes
-st.session_state.params = p
+p = st.session_state.params
 
 # Sidebar inputs in Output GUI (optional for live tweaking)
 st.sidebar.title("Adjust Inputs (Quick Edit)")
@@ -115,8 +114,11 @@ cycle_choice = st.sidebar.radio("Reefer cycle", ["Continuous", "Start-Stop", "Re
                                 index={"Continuous":0,"Start-Stop":1,"NoReeferStationary":2}.get(p["ReeferCycleInit"], 0))
 p["ReeferCycleInit"] = "NoReeferStationary" if cycle_choice == "Reefer OFF" else cycle_choice
 
+# Automatically update session state when any sidebar widget changes
+st.session_state.params = p
+
 # ---- After Calculate: pull values from session_state.params ----
-p = st.session_state.params
+
 arr_str = p["Arrival_HHMM"]
 dep_str = p["Departure_HHMM"]
 soc_arr_w = int(p["SOC_arrival_winter_pc"])
