@@ -1,28 +1,3 @@
-import streamlit as st
-
-# --- Add this block at the top of app_steamlit.txt ---
-# Define credentials (better: use st.secrets for security)
-USER_CREDENTIALS = {"admin": "Admin", "user": "Dontshare"}
-
-# Initialize login state
-if "logged_in" not in st.session_state:
-    st.session_state.logged_in = False
-
-# Show login form if not logged in
-if not st.session_state.logged_in:
-    st.title("Login Required")
-    username = st.text_input("Username")
-    password = st.text_input("Password", type="password")
-    if st.button("Login"):
-        if username in USER_CREDENTIALS and USER_CREDENTIALS[username] == password:
-            st.session_state.logged_in = True
-            st.success("Login successful!")
-            st.rerun()
-        else:
-            st.error("Invalid username or password")
-    st.stop()  # Prevent rest of the app from loading
-
-
 # -------------------- imports & page config --------------------
 import numpy as np
 import pandas as pd
@@ -57,6 +32,33 @@ if "params" not in st.session_state:
     st.session_state.params = DEFAULTS.copy()
 if "show_output" not in st.session_state:
     st.session_state.show_output = False
+
+
+# -------------------------------------------------------------------------
+import streamlit as st
+
+# --- Add this block at the top of app_steamlit.txt ---
+# Define credentials (better: use st.secrets for security)
+USER_CREDENTIALS = {"admin": "Admin", "user": "Dontshare"}
+
+# Initialize login state
+if "logged_in" not in st.session_state:
+    st.session_state.logged_in = False
+
+# Show login form if not logged in
+if not st.session_state.logged_in:
+    st.title("Login Required")
+    username = st.text_input("Username")
+    password = st.text_input("Password", type="password")
+    if st.button("Login"):
+        if username in USER_CREDENTIALS and USER_CREDENTIALS[username] == password:
+            st.session_state.logged_in = True
+            st.success("Login successful!")
+            st.rerun()
+        else:
+            st.error("Invalid username or password")
+    st.stop()  # Prevent rest of the app from loading
+
 
 # -------------------- INPUT PANEL (define BEFORE use) --------------------
 def render_input_panel():
