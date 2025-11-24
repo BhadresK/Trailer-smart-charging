@@ -36,7 +36,7 @@ if "show_output" not in st.session_state:
 
 # -------------------- INPUT PANEL (define BEFORE use) --------------------
 def render_input_panel():
-    st.title("EV & Reefer — Input Parameters")
+    st.title("Reefer — Input Parameters")
     st.caption("Adjust, then click **Calculate** to open the Output GUI.")
 
     p = st.session_state.params  # shorthand
