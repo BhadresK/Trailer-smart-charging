@@ -8,6 +8,29 @@ import backend as be
 
 st.set_page_config(page_title="Trailer Charging Cost — Interactive", layout="wide")
 
+
+# --- Simple Authentication ---
+if "authenticated" not in st.session_state:
+    st.session_state.authenticated = False
+
+if not st.session_state.authenticated:
+    st.title("🔒 Access Restricted")
+    st.write("Please enter your credentials to continue.")
+
+    with st.form("login_form"):
+        username = st.text_input("Username")
+        password = st.text_input("Password", type="password")
+        submitted = st.form_submit_button("Login")
+
+        if submitted:
+            if username == "admin" and password == "dontshare":
+                st.session_state.authenticated = True
+                st.success("Login successful! Reloading...")
+                st.rerun()
+            else:
+                st.error("Invalid username or password.")
+    st.stop()  # Prevent loading the rest of the app
+
 # -------------------- MATLAB-aligned defaults --------------------
 DEFAULTS = {
     "BatteryCapacity_kWh": 70.0,
