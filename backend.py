@@ -1,8 +1,3 @@
-# backend.py — computational core for EV & Reefer smart charging
-# Author: M365 Copilot (for Bhadreshvara, Kuldip)
-# Date: 2025-11-22
-# External data: avg_price.xlsx, time_soc.xlsx (same schema as MATLAB)
-
 from __future__ import annotations
 import math
 from dataclasses import dataclass
@@ -27,16 +22,15 @@ class EVParams:
     DepartureTime_HHMM: str
     MaxChargingPower_kW: float
 
-    # Fixed site defaults (mirroring MATLAB)
     PF_Reefer: float = 0.75
     GridPF_site: float = 0.98
     GridVoltage_V: float = 400
     GridCurrent_A: float = 32
-    GridMax_kVA: float = None  # computed
-    BattMaxCharge_kW: float = 14.148
-    BattMaxDischarge_kW: float = 14.680
+    GridMax_kVA: float = None
+    BattMaxCharge_kW: float = 25.34
+    BattMaxDischarge_kW: float = 25.34
     EAxle_Efficiency_pc: float = 90
-    EffectiveChargingPower_kW: float = None  # computed
+    EffectiveChargingPower_kW: float = None
     ReeferCycleInit: str = 'Continuous'  # 'Continuous'|'Start-Stop'|'NoReeferStationary'
 
     def finalize(self):

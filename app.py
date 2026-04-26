@@ -34,7 +34,7 @@ if not st.session_state.authenticated:
 # -------------------- MATLAB-aligned defaults --------------------
 DEFAULTS = {
     "BatteryCapacity_kWh": 70.0,
-    "UsableBatteryCap_kWh": 60.0,
+    "UsableBatteryCap_kWh": 63.0,
     "BatteryChargingEffi_pc": 97.0,
     "OBC_Capacity_kW": 22.0,
     "OBC_UsableCapacity_kW": 21.8,
@@ -45,7 +45,7 @@ DEFAULTS = {
     "Arrival_HHMM": "16:30",
     "Departure_HHMM": "07:30",
     "MaxChargingPower_kW": 22.0,
-    "ReeferCycleInit": "Continuous",  # Continuous | Start-Stop | NoReeferStationary
+    "ReeferCycleInit": "NoReeferStationary",  # Continuous | Start-Stop | NoReeferStationary
     "WinterMonths": 6,                 # Summer = 12 - Winter
 }
 
