@@ -456,13 +456,13 @@ with col1:
     st.table(df_charge)
 
 with col2:
-    st.markdown("#### Reefer Consumption (€)")
+    st.markdown("#### Reefer Consumption")
     df_trailer = pd.DataFrame([
         ["Energy used by trailer (kWh)", f"{RW['E_kWh']:.2f}", f"{RS['E_kWh']:.2f}"],
-        ["Diesel powered", f"{RW['cost_diesel']:.2f}", f"{RS['cost_diesel']:.2f}"],
-        ["Fixed electricity price", f"{RW['cost_fixed']:.2f}", f"{RS['cost_fixed']:.2f}"],
-        ["Dumb Charging", f"{RW['cost_dynamic']:.2f}", f"{RS['cost_dynamic']:.2f}"],
-        ["Smart Charging", f"{RW['cost_dynamic']:.2f}", f"{RS['cost_dynamic']:.2f}"],
+        ["Diesel powered (€)", f"{RW['cost_diesel']:.2f}", f"{RS['cost_diesel']:.2f}"],
+        ["Fixed electricity price (€)", f"{RW['cost_fixed']:.2f}", f"{RS['cost_fixed']:.2f}"],
+        ["Dumb Charging (€)", f"{RW['cost_dynamic']:.2f}", f"{RS['cost_dynamic']:.2f}"],
+        ["Smart Charging (€)", f"{RW['cost_dynamic']:.2f}", f"{RS['cost_dynamic']:.2f}"],
     ], columns=["Metric", "Winter", "Summer"])
     st.table(df_trailer)
 
@@ -490,7 +490,7 @@ with st.expander("Understanding This Panel", expanded=False):
 6. Reefer Cycle: Trailer refrigeration load while parked (Continuous/Start-Stop/OFF).  
 7. Trailer Energy: kWh consumed by the reefer during the parked window.  
 8. Cost Comparison: Charging & reefer costs under fixed vs dynamic pricing.  
-9. Yearly Savings: Assumes 20 parked days/month; multiplies seasonal costs.  
+9. Yearly Savings: Assumes 20 parked days/month. 
 10. Graph Colors: Blue = Winter Smart Power, Orange = Summer Smart Power; Gray = Dumb.  
 11. Fixed electricity price: €{rp.FixedPrice_EUR_per_kWh:.2f} per kWh.  
 12. Diesel price: €{rp.DieselPrice_EUR_per_L:.2f}/L; DG efficiency: {int(100*rp.Genset_efficiency_frac)}%; Energy density: {rp.Diesel_kWh_per_L:.1f} kWh/L.
