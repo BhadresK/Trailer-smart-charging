@@ -1,15 +1,15 @@
-# -------------------- imports & page config --------------------
 import numpy as np
 import pandas as pd
-from datetime import datetime, timedelta
+from datetime import timedelta
 import matplotlib.pyplot as plt
 import streamlit as st
 import backend as be
+import matplotlib.lines as mlines
 
 st.set_page_config(page_title="Trailer Charging Cost — Interactive", layout="wide")
 
 
-# --- Simple Authentication ---
+# Authentication
 if "authenticated" not in st.session_state:
     st.session_state.authenticated = False
 
@@ -31,7 +31,7 @@ if not st.session_state.authenticated:
                 st.error("Invalid username or password.")
     st.stop()  # Prevent loading the rest of the app
 
-# -------------------- MATLAB-aligned defaults --------------------
+# defaults 
 DEFAULTS = {
     "BatteryCapacity_kWh": 70.0,
     "UsableBatteryCap_kWh": 63.0,
@@ -56,7 +56,7 @@ if "show_output" not in st.session_state:
     st.session_state.show_output = False
 
 
-# ---------------------- INPUT PANEL (define BEFORE use) ----------------------
+# INPUT PANEL
 def render_input_panel():
     st.title("Reefer — Input Parameters")
 
@@ -78,7 +78,7 @@ def render_input_panel():
             p["OBC_UsableCapacity_kW"] = st.number_input("OBC Usable Capacity (kW)", value=float(p["OBC_UsableCapacity_kW"]), step=0.1)
             p["OBCEfficiency_pc"] = st.number_input("OBC Efficiency (%)", value=float(p["OBCEfficiency_pc"]), step=0.1, min_value=0.0, max_value=100.0)
 
-        # --- Column 2: Arrival & Departure + Charging unit + Season split ---
+        # --- Column 2: Arrival & Departure + Charging unit + Season split
         with c2:
             st.subheader("Arrival & Departure")
             p["Arrival_HHMM"] = st.text_input("Arrival Time (HH:MM)", value=p["Arrival_HHMM"])
@@ -131,11 +131,10 @@ def render_input_panel():
             st.rerun()
 
 
-# -------------------- ROUTING: input first, then output --------------------
+# ROUTING: input first, then output 
 if not st.session_state.show_output:
     render_input_panel()
     st.stop()  # do not run the output logic below until user clicks Calculate
-# ---------------------------------------------------------------------------
 
 p = st.session_state.params
 
@@ -166,7 +165,7 @@ w_months  = int(p["WinterMonths"])
 s_months  = 12 - w_months
 cycleUI   = "NoReeferStationary" if p["ReeferCycleInit"] == "NoReeferStationary" else p["ReeferCycleInit"]
 
-# ---------------------- Load data (same as MATLAB) -----------------------------------
+# Load data
 try:
     winterWD, summerWD = be.read_price_excel("avg_price.xlsx")
     tariff = be.get_tariff_params()
@@ -182,7 +181,7 @@ except Exception as e:
     st.error(f"Cannot read time_soc.xlsx: {e}")
     st.stop()
 
-# ---------------------- EV defaults ---------------------------------------------------
+# EV defaults
 EV = be.EVParams(
     BatteryCapacity_kWh=float(p["BatteryCapacity_kWh"]),
     UsableBatteryCap_kWh=float(p["UsableBatteryCap_kWh"]),
@@ -199,7 +198,7 @@ EV = be.EVParams(
 )
 EV.finalize()
 
-# ---------------------- Time vector, taper, reefer minute loads -----------------------
+# Time vector, taper, reefer minute loads
 t_arr, t_dep, t, dt_hr = be.build_time_vector(EV.ArrivalTime_HHMM, EV.DepartureTime_HHMM)
 if len(t) == 0:
     st.warning("Arrival/Departure times produce an empty parked window.")
@@ -218,7 +217,7 @@ else:
         cycleUI, t, t_arr, t_dep, 10, PF_reefer, kVA_refr_cap
     )
 
-# ---------------------- Reefer preview (in sidebar) -----------------------------------
+# Reefer preview (in sidebar)
 with st.sidebar.expander(f"Reefer Cycle — {'Reefer OFF' if cycleUI=='NoReeferStationary' else cycleUI}", expanded=True):
     # ≈ 2h preview from arrival (10s resolution)
     t10_prev = [t_arr + timedelta(seconds=i*10) for i in range(int((70*60)/10))]
@@ -228,14 +227,18 @@ with st.sidebar.expander(f"Reefer Cycle — {'Reefer OFF' if cycleUI=='NoReeferS
         P_reefer_1h_kW = be.get_reefer_cycle_trace(cycleUI, len(t10_prev), dt_sec=10)
     figPrev, axPrev = plt.subplots(figsize=(4.5, 2.0))
     axPrev.step(t10_prev, P_reefer_1h_kW, where='post', color=(0.00,0.45,0.10), lw=1.8)
-    axPrev.set_xlabel("Time (HH:MM)"); axPrev.set_ylabel("kW")
-    yMax = max(1.0, float(np.max(P_reefer_1h_kW))*1.2); axPrev.set_ylim(0, yMax)
+    axPrev.set_xlabel("Time (HH:MM)")
+    axPrev.set_ylabel("kW")
+    yMax = max(1.0, float(np.max(P_reefer_1h_kW))*1.2)
+    axPrev.set_ylim(0, yMax)
     axPrev.grid(True, linestyle=':', alpha=0.6)
     st.pyplot(figPrev, use_container_width=True)
 
-# ---------------------- Season-specific arrival SOC ---------------------------
-EVW = be.EVParams(**{k: getattr(EV, k) for k in EV.__dataclass_fields__}); EVW.finalize()
-EVS = be.EVParams(**{k: getattr(EV, k) for k in EV.__dataclass_fields__}); EVS.finalize()
+# Season-specific arrival SOC
+EVW = be.EVParams(**{k: getattr(EV, k) for k in EV.__dataclass_fields__})
+EVW.finalize()
+EVS = be.EVParams(**{k: getattr(EV, k) for k in EV.__dataclass_fields__})
+EVS.finalize()
 EVW.CurrentSOC_kWh = min(EV.UsableBatteryCap_kWh, max(0.0, EV.UsableBatteryCap_kWh * (soc_arr_w/100.0)))
 EVS.CurrentSOC_kWh = min(EV.UsableBatteryCap_kWh, max(0.0, EV.UsableBatteryCap_kWh * (soc_arr_s/100.0)))
 
@@ -243,13 +246,13 @@ target_kWh = EV.UsableBatteryCap_kWh * (soc_tgt/100.0)
 needW_kWh = max(0.0, target_kWh - EVW.CurrentSOC_kWh)
 needS_kWh = max(0.0, target_kWh - EVS.CurrentSOC_kWh)
 
-# ---------------------- Plans: smart vs baseline --------------------------------------
+# Plans: smart vs baseline
 Wsmart = be.plan_smart(t, dt_hr, winterALL, EVW, soc_bp, Pcap_grid_bp_kW, needW_kWh, eff_frac2, P_refr_min_kW, kVA_refr_min)
 Wbase  = be.plan_baseline(t, dt_hr, Wsmart["price_min"], EVW, soc_bp, Pcap_grid_bp_kW, eff_frac2, P_refr_min_kW, kVA_refr_min)
 Ssmart = be.plan_smart(t, dt_hr, summerALL, EVS, soc_bp, Pcap_grid_bp_kW, needS_kWh, eff_frac2, P_refr_min_kW, kVA_refr_min)
 Sbase  = be.plan_baseline(t, dt_hr, Ssmart["price_min"], EVS, soc_bp, Pcap_grid_bp_kW, eff_frac2, P_refr_min_kW, kVA_refr_min)
 
-# ---------------------- Main panel: BIG graphs ----------------------------------------
+# Main panel
 st.markdown("## Dumb vs Smart Charging of Reefer Trailer")
 
 # Build mapping to 24h canvas
@@ -257,8 +260,10 @@ t0 = t_arr.replace(hour=0, minute=0, second=0, microsecond=0)
 t24 = [t0 + timedelta(minutes=i) for i in range(1440)]
 idx = [int(((ti - t0).total_seconds()/60.0) % 1440) for ti in t]
 
-eW24 = np.array(winterALL).reshape(24); eS24 = np.array(summerALL).reshape(24)
-eWst = np.concatenate([eW24, eW24[-1:]]); eSst = np.concatenate([eS24, eS24[-1:]])
+eW24 = np.array(winterALL).reshape(24)
+eS24 = np.array(summerALL).reshape(24)
+eWst = np.concatenate([eW24, eW24[-1:]])
+eSst = np.concatenate([eS24, eS24[-1:]])
 tp = [t0 + timedelta(hours=h) for h in range(25)]
 hMid = [t0 + timedelta(hours=h, minutes=30) for h in range(24)]
 
@@ -267,27 +272,35 @@ h24 = np.arange(1440) / 60.0              # 0.00 ... 23.9833 (minute resolution)
 tp_hours = np.arange(25)                  # 0,1,...,24 (for hourly price band)
 hMid_hours = np.arange(24) + 0.5          # mid points for hour labels (0.5,1.5,...,23.5)
 
-P_norm_W = np.zeros(1440); P_smart_W = np.zeros(1440)
-P_norm_S = np.zeros(1440); P_smart_S = np.zeros(1440)
-SOC_norm_W = np.full(1440, np.nan); SOC_smart_W = np.full(1440, np.nan)
-SOC_norm_S = np.full(1440, np.nan); SOC_smart_S = np.full(1440, np.nan)
+P_norm_W = np.zeros(1440)
+P_smart_W = np.zeros(1440)
+P_norm_S = np.zeros(1440)
+P_smart_S = np.zeros(1440)
+SOC_norm_W = np.full(1440, np.nan)
+SOC_smart_W = np.full(1440, np.nan)
+SOC_norm_S = np.full(1440, np.nan)
+SOC_smart_S = np.full(1440, np.nan)
 
-P_norm_W[idx] = Wbase["P_trace"]; P_smart_W[idx] = Wsmart["P_trace"]
-P_norm_S[idx] = Sbase["P_trace"]; P_smart_S[idx] = Ssmart["P_trace"]
+P_norm_W[idx] = Wbase["P_trace"]
+P_smart_W[idx] = Wsmart["P_trace"]
+P_norm_S[idx] = Sbase["P_trace"]
+P_smart_S[idx] = Ssmart["P_trace"]
 SOC_norm_W[idx] = 100.0 * Wbase["SOC_trace"]/EV.UsableBatteryCap_kWh
 SOC_smart_W[idx] = 100.0 * Wsmart["SOC_trace"]/EV.UsableBatteryCap_kWh
 SOC_norm_S[idx] = 100.0 * Sbase["SOC_trace"]/EV.UsableBatteryCap_kWh
 SOC_smart_S[idx] = 100.0 * Ssmart["SOC_trace"]/EV.UsableBatteryCap_kWh
 
-colW_dumb = (0.70, 0.70, 0.70); colW_smart = (0.30, 0.75, 0.93)
-colS_dumb = (0.70, 0.70, 0.70); colS_smart = (1.00, 0.60, 0.20)
-colSoC_d = (0.50, 0.50, 0.50); colSoC_s = (0.00, 0.00, 0.00)
-colPrLn = (0.00, 0.60, 0.00); colPrTx = (0.00, 0.45, 0.15)
+colW_dumb = (0.70, 0.70, 0.70)
+colW_smart = (0.30, 0.75, 0.93)
+colS_dumb = (0.70, 0.70, 0.70)
+colS_smart = (1.00, 0.60, 0.20)
+colSoC_d = (0.50, 0.50, 0.50)
+colSoC_s = (0.00, 0.00, 0.00)
+colPrLn = (0.00, 0.60, 0.00)
+colPrTx = (0.00, 0.45, 0.15)
 
 
 
-import matplotlib.lines as mlines
-# Thinner legend strokes to save space
 legend_items = [
     mlines.Line2D([], [], color=colW_dumb,  lw=5, label='Dumb Power'),
     mlines.Line2D([], [], color=colW_smart, lw=5, label='Winter Smart Power'),
@@ -330,9 +343,13 @@ leftYL = axW.get_ylim()
 if leftYL[1]-leftYL[0] <= 0:
     axW.set_ylim(0, 1)
     leftYL = axW.get_ylim()
-padFrac = 0.04; bandFrac = 0.12
-rngW = leftYL[1]-leftYL[0]; yBase = leftYL[0]+padFrac*rngW; yTop = yBase+bandFrac*rngW
-eMinW = float(np.min(eWst)); eMaxW = float(np.max(eWst))
+padFrac = 0.04
+bandFrac = 0.12
+rngW = leftYL[1]-leftYL[0]
+yBase = leftYL[0]+padFrac*rngW
+yTop = yBase+bandFrac*rngW
+eMinW = float(np.min(eWst))
+eMaxW = float(np.max(eWst))
 yPriceW = (yBase + (eWst-eMinW)/(eMaxW-eMinW)*(yTop-yBase)) if eMaxW!=eMinW else np.full_like(eWst, yBase)
 
 # PRICE BAND using hours on X
@@ -342,7 +359,8 @@ axW.step(tp_hours, yPriceW, where='post', color=colPrLn, lw=1.0, label='Hourly E
 ax2 = axW.twinx()
 ax2.plot(h24, SOC_norm_W, '-', color=colSoC_d, lw=1.1, label='SoC Dumb')
 ax2.plot(h24, SOC_smart_W, '-', color=colSoC_s, lw=1.1, label='SoC Smart')
-ax2.set_ylim(0, 100); ax2.set_ylabel('SoC (%)')
+ax2.set_ylim(0, 100)
+ax2.set_ylabel('SoC (%)')
 
 # X-axis: hours 0..24
 axW.set_xlim(0, 24)
@@ -382,7 +400,8 @@ rngS   = leftYL[1]-leftYL[0]
 yBaseS = leftYL[0] + padFrac * rngS
 yTopS  = yBaseS + bandFrac * rngS
 
-eMinS = float(np.min(eSst)); eMaxS = float(np.max(eSst))
+eMinS = float(np.min(eSst))
+eMaxS = float(np.max(eSst))
 yPriceS = (yBaseS + (eSst - eMinS)/(eMaxS - eMinS) * (yTopS - yBaseS)) if eMaxS != eMinS else np.full_like(eSst, yBaseS)
 
 # PRICE BAND (hours on X)
@@ -391,7 +410,8 @@ axS.step(tp_hours, yPriceS, where='post', color=colPrLn, lw=1.0)
 # SoC twin axis (hours on X)
 ax2S.plot(h24, SOC_norm_S,  '-', color=colSoC_d, lw=1.1)
 ax2S.plot(h24, SOC_smart_S, '-', color=colSoC_s, lw=1.1)
-ax2S.set_ylim(0, 100); ax2S.set_ylabel('SoC (%)')
+ax2S.set_ylim(0, 100)
+ax2S.set_ylabel('SoC (%)')
 
 # X-axis hours 0..24
 axS.set_xlim(0, 24)

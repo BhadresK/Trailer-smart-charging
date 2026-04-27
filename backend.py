@@ -6,7 +6,7 @@ import numpy as np
 import pandas as pd
 from datetime import datetime, timedelta
 
-# ----------------------------- Utility structures -----------------------------
+# Utility structures 
 @dataclass
 class EVParams:
     BatteryCapacity_kWh: float
@@ -37,7 +37,7 @@ class EVParams:
         self.GridMax_kVA = math.sqrt(3) * self.GridVoltage_V * self.GridCurrent_A / 1000.0
         self.EffectiveChargingPower_kW = min(self.OBC_UsableCapacity_kW, self.MaxChargingPower_kW)
 
-# ----------------------------- Tariff components -----------------------------
+# Tariff components
 def get_tariff_params() -> Dict[str, float]:
     # Same constants as in MATLAB EVSmartwithReefer10
     return {
@@ -63,7 +63,7 @@ def compose_all_in_price(spot_eur_24: np.ndarray, params: Dict[str, float]) -> n
     all_in = net * (1.0 + params['VAT_pc']/100.0)
     return all_in
 
-# ----------------------------- File I/O helpers ------------------------------
+# File I/O helpers
 def read_price_excel(path: str) -> Tuple[np.ndarray, np.ndarray]:
     """Read avg_price.xlsx (24 hourly values for WinterWD and SummerWD)."""
     df = pd.read_excel(path, engine='openpyxl')
@@ -88,7 +88,7 @@ def read_taper_table(path: str) -> pd.DataFrame:
         raise ValueError('time_soc.xlsx "Time" must strictly increase.')
     return df
 
-# ----------------------------- Core time helpers -----------------------------
+# Core time helpers
 def _parse_hhmm(s: str) -> Tuple[int, int]:
     hh, mm = s.strip().split(':')
     return int(hh), int(mm)
@@ -110,7 +110,7 @@ def build_time_vector(arr_str: str, dep_str: str) -> Tuple[datetime, datetime, L
     dt_hr = dt_sec / 3600.0
     return t_arr, t_dep, t, dt_hr
 
-# ----------------------------- Charging taper -------------------------------
+# Charging taper
 def build_taper_lookup(soc_df: pd.DataFrame, EV: EVParams, eff_frac: float) -> Tuple[np.ndarray, np.ndarray]:
     minutes = soc_df['Time'].to_numpy()
     soc_pct = soc_df['SoC'].to_numpy()
@@ -135,7 +135,7 @@ def build_taper_lookup(soc_df: pd.DataFrame, EV: EVParams, eff_frac: float) -> T
             uniq_P.append(p)
     return np.array(uniq_soc), np.array(uniq_P)
 
-# ----------------------------- Reefer cycle ---------------------------------
+# Reefer cycle
 REEFER_DEFAULTS = {
     'P_HIGH_C': 7.6,
     'P_LOW_C': 0.7,
@@ -214,7 +214,7 @@ def build_reefer_stationary_minute_trace(cycle_type: str,
             kVA_refr_min[i] = kVAmin[j]
     return P_refr_min_kW, kVA_refr_min
 
-# ----------------------------- Simulation core -------------------------------
+# Simulation core
 @dataclass
 class SimResult:
     P_trace: np.ndarray
@@ -317,7 +317,7 @@ def plan_baseline(t: List[datetime], dt_hr: float, price_min: np.ndarray, EV: EV
     sim = simulate(t, dt_hr, price_min, EV, soc_bp, Pcap_grid_bp_kW, eff_frac, float('inf'), P_refr_min_kW, kVA_refr_min)
     return finalize_res(sim, price_min, dt_hr, float('inf'))
 
-# ----------------------------- Reefer energy & cost ---------------------------
+# Reefer energy & cost
 @dataclass
 class ReeferCostParams:
     FixedPrice_EUR_per_kWh: float = 0.35
@@ -362,7 +362,7 @@ def compute_reefer_cost_scenarios(P_refr_min_kW: np.ndarray, dt_hr: float,
         'diesel_liters_used': liters_used,
     }
 
-# ----------------------------- Small helpers ---------------------------------
+# Small helpers
 def clamp(x: float, a: float, b: float) -> float:
     return max(a, min(b, x))
 
