@@ -8,7 +8,6 @@ import matplotlib.lines as mlines
 
 st.set_page_config(page_title="Trailer Charging Cost — Interactive", layout="wide")
 
-
 # Authentication
 if "authenticated" not in st.session_state:
     st.session_state.authenticated = False
@@ -45,8 +44,8 @@ DEFAULTS = {
     "Arrival_HHMM": "16:30",
     "Departure_HHMM": "07:30",
     "MaxChargingPower_kW": 22.0,
-    "ReeferCycleInit": "NoReeferStationary",  # Continuous | Start-Stop | NoReeferStationary
-    "WinterMonths": 6,                 # Summer = 12 - Winter
+    "ReeferCycleInit": "NoReeferStationary",
+    "WinterMonths": 6,
 }
 
 # Init session state once
@@ -446,12 +445,12 @@ sav_smart_vs_dumb  = yearly_dumb - yearly_smart
 col1, col2, col3 = st.columns([1, 1, 1])
 
 with col1:
-    st.markdown("#### Battery Charging Cost (€)")
+    st.markdown("#### Battery Charging Cost")
     df_charge = pd.DataFrame([
         ["Energy needed (kWh)", f"{needW_kWh:.2f}", f"{needS_kWh:.2f}"],
-        ["Fixed Price Charging", f"{cost_fixed_W_EV:.2f}", f"{cost_fixed_S_EV:.2f}"],
-        ["Dumb Charging", f"{Wbase['cost_EUR']:.2f}", f"{Sbase['cost_EUR']:.2f}"],
-        ["Smart Charging", f"{Wsmart['cost_EUR']:.2f}", f"{Ssmart['cost_EUR']:.2f}"],
+        ["Fixed Price Charging (€)", f"{cost_fixed_W_EV:.2f}", f"{cost_fixed_S_EV:.2f}"],
+        ["Dumb Charging (€)", f"{Wbase['cost_EUR']:.2f}", f"{Sbase['cost_EUR']:.2f}"],
+        ["Smart Charging (€)", f"{Wsmart['cost_EUR']:.2f}", f"{Ssmart['cost_EUR']:.2f}"],
     ], columns=["Metric", "Winter", "Summer"])
     st.table(df_charge)
 
@@ -469,11 +468,11 @@ with col2:
 with col3:
     st.markdown("#### Yearly Values (€)")
     df_yearly = pd.DataFrame([
-        ["Fixed Price Charging Cost", f"€{yearly_fixed:.2f}"],
-        ["Dumb Charging Cost", f"€{yearly_dumb:.2f}"],
-        ["Smart Charging Cost", f"€{yearly_smart:.2f}"],
-        ["Savings (Smart vs Fixed)", f"€{sav_smart_vs_fixed:.2f}"],
-        ["Savings (Smart vs Dumb)", f"€{sav_smart_vs_dumb:.2f}"],
+        ["Fixed Price Charging Cost", f"{yearly_fixed:.2f}"],
+        ["Dumb Charging Cost", f"{yearly_dumb:.2f}"],
+        ["Smart Charging Cost", f"{yearly_smart:.2f}"],
+        ["**Savings (Smart vs Fixed)**", f"{sav_smart_vs_fixed:.2f}"],
+        ["**Savings (Smart vs Dumb)**", f"{sav_smart_vs_dumb:.2f}"],
     ], columns=["Metric", "Value"])
     st.table(df_yearly)
 
