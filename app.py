@@ -57,7 +57,7 @@ if "show_output" not in st.session_state:
 
 # INPUT PANEL
 def render_input_panel():
-    st.title("Schmitz Cargobull SKOe Cool Reefer Trailer - Input Parameters")
+    st.title("Schmitz Cargobull SKOe Cool 2.0")
 
     p = st.session_state.params  # shorthand
     
